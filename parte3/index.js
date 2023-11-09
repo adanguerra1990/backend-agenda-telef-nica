@@ -31,7 +31,15 @@ app.get('/info', (request, response) => {
     const date = new Date();
     const numberOfEntries = persons.length;
     response.send(`<h1>Hora de la Solicitud: ${date}</h1><h2>Número de entradas en la agenda telefónica: ${numberOfEntries}</h2>`)
-})
+});
+
+app.get('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id);
+    const person = persons.find(person => person.id === id);
+
+    person ? response.json(person) : response.status(404).end();
+});
+
 
 const PORT = 3001;
 app.listen(PORT);
