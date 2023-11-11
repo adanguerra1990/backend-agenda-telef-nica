@@ -1,7 +1,11 @@
+//  importar el módulo Express y crean una nueva aplicación Express
 const express = require('express');
+const morgan = require('morgan')
 const app = express();
 
+// habilita el middleware express.json(), que permite a la aplicación parsear los cuerpos de las solicitudes entrantes con contenido tipo JSON
 app.use(express.json());
+app.use(morgan('tiny'))
 
 let persons = [
     {
@@ -35,6 +39,7 @@ app.get('/info', (request, response) => {
     response.send(`<h1>Hora de la Solicitud: ${date}</h1><h2>Número de entradas en la agenda telefónica: ${numberOfEntries}</h2>`)
 });
 
+
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id);
     const person = persons.find(person => person.id === id);
@@ -52,7 +57,7 @@ const generateId = () => {
 app.post('/api/persons', (request, response) => {
     const body = request.body;
     console.log('Body... ', body)
-    
+
     if (!body.name || !body.number) {
         return response.status(400).json({
             error: 'Name or number is missing'
@@ -62,7 +67,7 @@ app.post('/api/persons', (request, response) => {
     const nameExists = persons.some(person => person.name === body.name);
     if (nameExists) {
         return response.status(400).json({
-            error: 'name must be unique' 
+            error: 'name must be unique'
         })
     }
 
@@ -70,15 +75,15 @@ app.post('/api/persons', (request, response) => {
         "id": generateId(),
         "name": body.name,
         "number": body.number,
-        "date": new Date().toDateString()
+        "date": new Date().toString()
     }
 
     persons = persons.concat(person)
 
-    console.log('personas... ', persons)
-    
+    console.log({persons})
+
     response.json(person)
-    console.log('Person.... ', person)
+    console.log({person})
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -89,7 +94,6 @@ app.delete('/api/persons/:id', (request, response) => {
 
     response.status(204).end()
 })
-
 
 
 const PORT = 3001;
