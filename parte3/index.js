@@ -3,9 +3,11 @@ const express = require('express');
 const morgan = require('morgan')
 const app = express();
 
+morgan.token('body', (request, response) => JSON.stringify(request.body))
+
 // habilita el middleware express.json(), que permite a la aplicación parsear los cuerpos de las solicitudes entrantes con contenido tipo JSON
 app.use(express.json());
-app.use(morgan('tiny'))
+app.use(morgan(':method :url :status :response-time ms - :body'))
 
 let persons = [
     {
