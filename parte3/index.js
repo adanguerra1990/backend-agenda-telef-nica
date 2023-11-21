@@ -1,13 +1,27 @@
 //  importar el módulo Express y crean una nueva aplicación Express
 const express = require('express');
-const morgan = require('morgan')
+const morgan = require('morgan');
+const cors = require('cors');
 const app = express();
+
+const requestLogger = (request, response, next) => {
+    console.log('Method:', request.method)
+    console.log('Path:  ', request.path)
+    console.log('Body:  ', request.body)
+    console.log('---')
+    next();
+}
 
 morgan.token('body', (request, response) => JSON.stringify(request.body))
 
+
 // habilita el middleware express.json(), que permite a la aplicación parsear los cuerpos de las solicitudes entrantes con contenido tipo JSON
 app.use(express.json());
+app.use(express.static('dist'))
+app.use(cors());
+app.use(requestLogger)
 app.use(morgan(':method :url :status :response-time ms - :body'))
+
 
 let persons = [
     {
@@ -82,10 +96,10 @@ app.post('/api/persons', (request, response) => {
 
     persons = persons.concat(person)
 
-    console.log({persons})
+    console.log({ persons })
 
     response.json(person)
-    console.log({person})
+    console.log({ person })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -98,6 +112,7 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 
-const PORT = 3001;
-app.listen(PORT);
-console.log(`Server Running on port ${PORT}`)
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Server Running on port ${PORT}`)
+});
